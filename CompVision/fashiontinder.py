@@ -5,7 +5,7 @@ import numpy as np
 from playsound import playsound
 
 def generate_sine_wave(freq, duration=DURATION):
-    playsound('/sounds/like.wav')
+    playsound('/lib/sounds/like.wav')
 
 # --- MediaPipe Hand Tracker ---
 mp_hands = mp.solutions.hands
