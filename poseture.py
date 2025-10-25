@@ -22,7 +22,7 @@ def main():
 
 def GPTgenerated_camera_streaming_only_can_quit_with_ctrlc():
       # STEP 2: Create a PoseLandmarker object.
-  base_options = python.BaseOptions(model_asset_path='lib/pose_landmarker.task')
+  base_options = python.BaseOptions(model_asset_path='pose_landmarker_heavy.task')
   options = vision.PoseLandmarkerOptions(
     base_options=base_options,
     output_segmentation_masks=True)
