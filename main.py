@@ -14,9 +14,8 @@ import cv2
 
 
 def main():
-
     # Initialize the camera stream.
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
 
     plt.rcParams.update({
         'axes.spines.top': False,
@@ -56,35 +55,39 @@ def main():
             recognition_result = recognizer.recognize(image)
 
             # STEP 5: Process the result. In this case, visualize it.
-            top_gesture = recognition_result.gestures[0][0]
-            hand_landmarks = recognition_result.hand_landmarks
-
-            title = f"{top_gesture.category_name} ({top_gesture.score:.2f})"
+            title = "No gestures detected."
             annotated_image = frame_rgb.copy()
 
-            if hand_landmarks:
-                mp_hands = mp.solutions.hands
-                mp_drawing = mp.solutions.drawing_utils
-                mp_drawing_styles = mp.solutions.drawing_styles
+            if recognition_result.gestures and recognition_result.gestures[0]:
+                top_gesture = recognition_result.gestures[0][0]
+                hand_landmarks = recognition_result.hand_landmarks
+                title = f"{top_gesture.category_name} ({top_gesture.score:.2f})"
 
-                for hand_landmark in hand_landmarks:
-                    hand_landmarks_proto = landmark_pb2.NormalizedLandmarkList()
-                    hand_landmarks_proto.landmark.extend([
-                        landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z) for landmark in hand_landmark
-                    ])
+                if hand_landmarks:
+                    mp_hands = mp.solutions.hands
+                    mp_drawing = mp.solutions.drawing_utils
+                    mp_drawing_styles = mp.solutions.drawing_styles
 
-                    mp_drawing.draw_landmarks(
-                        annotated_image,
-                        hand_landmarks_proto,
-                        mp_hands.HAND_CONNECTIONS,
-                        mp_drawing_styles.get_default_hand_landmarks_style(),
-                        mp_drawing_styles.get_default_hand_connections_style()
-                    )
+                    for hand_landmark in hand_landmarks:
+                        hand_landmarks_proto = landmark_pb2.NormalizedLandmarkList()
+                        hand_landmarks_proto.landmark.extend([
+                            landmark_pb2.NormalizedLandmark(x=landmark.x, y=landmark.y, z=landmark.z) for landmark in hand_landmark
+                        ])
+
+                        mp_drawing.draw_landmarks(
+                            annotated_image,
+                            hand_landmarks_proto,
+                            mp_hands.HAND_CONNECTIONS,
+                            mp_drawing_styles.get_default_hand_landmarks_style(),
+                            mp_drawing_styles.get_default_hand_connections_style()
+                        )
 
             # Display the annotated image with the gesture title.
-            plt.figure()
-            display_one_image(annotated_image, title, (1, 1, 1))
-            plt.show()
+            cv2.imshow("Gesture Recognition", cv2.cvtColor(annotated_image, cv2.COLOR_RGB2BGR))
+
+            # Break the loop if 'q' is pressed.
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
 
     finally:
         # Release the camera stream.
@@ -195,4 +198,9 @@ def display_batch_of_images_with_gestures_and_hand_landmarks(images, results):
     plt.show()
 
 if __name__ == "__main__":
+<<<<<<< HEAD
     oldmain()
+=======
+    
+    main()
+>>>>>>> 5b59aaa (add camera to main(finger))
