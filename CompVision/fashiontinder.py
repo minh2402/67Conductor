@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import pygame
+import logging
 
 pygame.mixer.init()
 like_sound = pygame.mixer.Sound('sounds/like.wav')
@@ -28,7 +29,6 @@ while True:
 
     frame = cv2.flip(frame, 1)  # mirror
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
     results = hands.process(frame_rgb)
 
     if results.multi_hand_landmarks:
