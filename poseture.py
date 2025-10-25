@@ -9,11 +9,15 @@ import numpy as np
 import cv2
 
 import mediapipe as mp
+import sys
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
 
 def main():
+  if len(sys.argv) < 2:
+    print("Usage: python poseture.py <camera_index>")
+    return 
   GPTgenerated_camera_streaming_only_can_quit_with_ctrlc();
 
 def GPTgenerated_camera_streaming_only_can_quit_with_ctrlc():
@@ -25,7 +29,7 @@ def GPTgenerated_camera_streaming_only_can_quit_with_ctrlc():
   detector = vision.PoseLandmarker.create_from_options(options)
 
   # Open the camera stream.
-  cap = cv2.VideoCapture(1)
+  cap = cv2.VideoCapture(int(sys.argv[1]))
   if not cap.isOpened():
     print("Error: Could not open camera.")
     return
@@ -37,8 +41,9 @@ def GPTgenerated_camera_streaming_only_can_quit_with_ctrlc():
       break
 
     # Convert the frame to RGB as Mediapipe expects RGB images.
-    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    rgb_frame = cv2.cvtColor(cv2.flip(frame, 1), cv2.COLOR_BGR2RGB)
     image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_frame)
+
 
     # Detect pose landmarks from the camera frame.
     detection_result = detector.detect(image)

@@ -195,4 +195,4 @@ def display_batch_of_images_with_gestures_and_hand_landmarks(images, results):
     plt.show()
 
 if __name__ == "__main__":
-    main()
+    oldmain()
