@@ -1,0 +1,155 @@
+---
+// filepath: /workspaces/67Conductor/website/src/pages/index.astro
+import astroLogo from "../assets/astro.svg";
+import background from "../assets/background.svg";
+
+
+import Layout from "../layouts/Layout.astro";
+
+// Construct the full URL for the API request
+import words from "../lib/words.ts";
+console.log(JSON.parse(words()));
+---
+
+<Layout title="hi">
+  <div id="container">
+    <img id="background" src={background.src} alt="" fetchpriority="high" />
+    <main class="w-[80vw] !h-[80vh] mx-auto bg-red-500 text-4xl flex flex-wrap justify-center items-center overflow-y-scroll">
+      <div id="word-grid" class="flex flex-wrap justify-center items-center">
+        {JSON.parse(words()).words.map((word: string) => (
+          <button
+        type="button"
+        data-word={word}
+        class="word-btn px-3 py-2 rounded-md border-2 h-fit m-3"
+        aria-pressed="false"
+          >
+        {word}
+          </button>
+        ))}
+      </div>
+
+      </main>
+      <div class="flex items-center justify-center mt-4">
+        <div id="selectedCount" class="mr-3">0</div>
+        <button id="nextBtn" class="px-4 py-2 rounded-md bg-blue-600 text-white ml-2">
+          Next
+        </button>
+      </div>
+
+      <style>
+        .word-btn {
+          transition: background-color 0.15s, color 0.15s, transform 0.08s;
+          cursor: pointer;
+          background: white;
+          color: #111827;
+        }
+        .word-btn:hover { transform: translateY(-2px); }
+        .word-btn.selected {
+          background: #111827;
+          color: #fff;
+          border-color: transparent;
+          box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+        }
+        #selectedCount { font-weight: 600; }
+      </style>
+
+      <script type="module" client:load>
+        const selected = new Set();
+        const grid = document.getElementById('word-grid');
+        const nextBtn = document.getElementById('nextBtn');
+        const countEl = document.getElementById('selectedCount');
+
+        function updateCount() {
+          countEl.textContent = String(selected.size);
+        }
+
+        grid.addEventListener('click', (e) => {
+          const btn = e.target.closest('button[data-word]');
+          if (!btn) return;
+          const w = btn.dataset.word;
+          if (selected.has(w)) {
+        selected.delete(w);
+        btn.classList.remove('selected');
+        btn.setAttribute('aria-pressed', 'false');
+          } else {
+        selected.add(w);
+        btn.classList.add('selected');
+        btn.setAttribute('aria-pressed', 'true');
+          }
+          updateCount();
+        });
+
+        nextBtn.addEventListener('click', async () => {
+          
+          const payload = Array.from(selected);
+          console.log('Selected words:', JSON.stringify({ selected: payload }));
+          // Send selected words to the server (adjust endpoint as needed)
+          try {
+        const res = await fetch('/api/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ selected: payload }),
+        });
+        if (!res.ok) {
+          console.error('Send failed', await res.text());
+        } else {
+          console.log('Sent', payload);
+        }
+          } catch (err) {
+        console.error(err);
+          }
+        });
+      </script>
+    </main>
+    <style>
+      #background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        filter: blur(100px);
+      }
+
+      #container {
+        font-family: Inter, Roboto, "Helvetica Neue", "Arial Nova",
+          "Nimbus Sans", Arial, sans-serif;
+        height: 100%;
+      }
+
+      main {
+        display: flex;
+        justify-content: center;
+        z-index: 1;
+      }
+
+      #hero {
+        display: flex;
+        align-items: start;
+        flex-direction: column;
+        justify-content: center;
+        padding: 16px;
+      }
+
+      h1 {
+        font-size: 22px;
+        margin-top: 0.25em;
+      }
+
+      #links {
+        display: flex;
+        gap: 16px;
+      }
+
+      #links a {
+        display: flex;
+        align-items: center;
+        padding: 10px 12px;
+        color: #111827;
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+    </style>
+  </div>
+</Layout>
