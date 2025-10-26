@@ -15,5 +15,5 @@ def run_bash_command(command):
         return f"Error: {e.stderr.strip()}"
 
 # Example usage
-output = run_bash_command("ls -la")
-print(output)
+output = run_bash_command("ghc HSLib.hs")
+return output
